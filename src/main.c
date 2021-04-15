@@ -7,9 +7,16 @@
 
 #include "../include/ftp.h"
 
-int correct_args(char **av)
+static int is_valid_port(char *av)
 {
-    if (atoi(av[1]) > 65353) {
+    int pid = atoi(av);
+    int num_length = 0;
+
+    while (pid) {
+        num_length++;
+        pid /= 10;
+    }
+    if (atoi(av) < 0 || atoi(av) > 65353 || strlen(av) != (size_t)num_length) {
         fprintf(stderr, "port number is invalid\n");
         return (0);
     }
@@ -37,9 +44,8 @@ int main(int ac, char **av,char **envp)
         display_help();
         return (84);
     }
-    if (correct_args(av))
-        //ret = server_run(av);
-        printf("Is not implemented yes, give me some time\n");
+    if (is_valid_port(av[1]))
+        server_run(atoi(av[1]), av[2]);
     else
         ret = 84;
     return (ret);
