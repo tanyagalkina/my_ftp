@@ -12,6 +12,7 @@ CC	= gcc
 RM	= rm -f
 
 SRCS	=	./src/main.c \
+		./src/server.c
 
 OBJS	= $(SRCS:.c=.o)
 
