@@ -44,7 +44,7 @@ int main(int ac, char **av,char **envp)
         display_help();
         return (84);
     }
-    if (is_valid_port(av[1]))
+    if (is_valid_port(av[1]) && !chdir(av[2]))
         server_run(atoi(av[1]), av[2]);
     else
         ret = 84;
