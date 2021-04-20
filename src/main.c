@@ -16,7 +16,7 @@ static int is_valid_port(char *av)
         num_length++;
         pid /= 10;
     }
-    if (atoi(av) < 0 || atoi(av) > 65353 || strlen(av) != (size_t)num_length) {
+    if (atoi(av) < 1 || atoi(av) > 65353 || strlen(av) != (size_t)num_length) {
         fprintf(stderr, "port number is invalid\n");
         return (0);
     }

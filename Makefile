@@ -11,13 +11,14 @@ CC	= gcc
 
 RM	= rm -f
 
-SRCS	=	./src/main.c \
-		./src/server.c
+SRCS	=	./src/main.c 	\
+		./src/server.c	\
+		./src/commands.c
 
 OBJS	= $(SRCS:.c=.o)
 
 CFLAGS = -I ./include/
-CFLAGS += -Wall -Wextra -Werror
+CFLAGS += -Wall -Wextra
 
 all: $(NAME)
 
