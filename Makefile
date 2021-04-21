@@ -11,9 +11,13 @@ CC	= gcc
 
 RM	= rm -f
 
-SRCS	=	./src/main.c 	\
-		./src/server.c	\
-		./src/commands.c
+SRCS	=	./src/main.c 		\
+		./src/server.c		\
+		./src/commands.c	\
+		./src/handle_conns.c	\
+		./src/cmd_handler.c	\
+		./src/my_str_to_word_array.c	\
+		./src/my_str_isprintable.c
 
 OBJS	= $(SRCS:.c=.o)
 

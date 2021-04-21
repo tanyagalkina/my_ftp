@@ -11,7 +11,7 @@
 #include "../include/ftp.h"
 #include "../include/commands.h"
 
-void serv_init(server_t *server, int port)
+void serv_init(server_t *server, int port, char *path)
 {
     int opt = 1;
     if ((server->sd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
@@ -23,6 +23,8 @@ void serv_init(server_t *server, int port)
         perror("setsockopt");
         exit(84);
     }
+    server->anon_home = strdup(path);
+    server->conn_list = NULL;
     server->addr.sin_family = AF_INET;
     server->addr.sin_addr.s_addr = htonl(INADDR_ANY);
     server->addr.sin_port = htons(port);
@@ -44,29 +46,25 @@ void sig_handler(int sig)
     exit (0);
 }
 
-static void handle_connection(int fd)
+static int is_quit(char *buffer)
 {
-    write(fd, "Hello\n", 6);
-    close(fd);
-}
-
-void *get_in_addr(SA *sa)
-{
-    return &(((struct sockaddr_in*)sa)->sin_addr);
+    char *command = strsep(&buffer, "\r\n");
+    char **params = my_str_to_word_array(command);
+    if (!strcmp("QUIT", params[0]) && params[1] == NULL)
+        return (1);
+    return (0);
 }
 
 void server_run(int port, char *path)
 {
     server_t *server = malloc(sizeof(server_t));
-    serv_init(server, port);
+    serv_init(server, port, path);
     SS rem_addr;
-    char remoteIP[INET_ADDRSTRLEN];
     int ns = -1;
     signal(SIGINT, sig_handler);
     signal(SIGPIPE, sig_handler);
     signal(SIGTERM, sig_handler);
-    char buffer[2048] = {0};
-    server->anon_home = path;
+    char *buffer;
     //int adlen = sizeof(SA);
     socklen_t  adlen;
     fd_set master_socks;
@@ -80,8 +78,6 @@ void server_run(int port, char *path)
     int sel = 0;
     int fd_max = server->sd;
 
-    int conn_fds[100] = {0};
-
     while (TRUE) {
         ready_socks = master_socks;
         writy_socks = master_socks;
@@ -94,32 +90,44 @@ void server_run(int port, char *path)
                 ///if the listener has something to read...
                 if (i == server->sd) {
                     ns = accept(server->sd, (SA *)&rem_addr, &adlen);
+                    add_client(server, ns, rem_addr, adlen);
+                    ///*******list.add
                     FD_SET(ns, &master_socks);
                     if (ns > fd_max)
                         fd_max = ns;
-                    printf("selectserver: new connection from %s on socket %d\n", inet_ntop(rem_addr.ss_family,
-                              get_in_addr((struct sockaddr*)&rem_addr),
-                              remoteIP, INET_ADDRSTRLEN),
-                            ns);
-                    write(ns, "220 Service ready\r\n", 19);
+                    write(ns, "220 Welcome! Service ready\r\n", 28);
                 } else {
-                    if (0 == read(i, buffer, MAXLINE) && FD_ISSET(i, &writy_socks)) {
+                    //buffer = get_next_line(i);
+                    //assert(buffer != NULL);
+                    //printf("buffer was%s\n", buffer);
+                    if (
+                            //!strcmp("EXIT\n", buffer) && FD_ISSET(i, &writy_socks))
+                            0 == read(i, buffer, MAXLINE) && FD_ISSET(i, &writy_socks))
+                    {
                         printf("socket %d is gone... bye!\n", i);
-                        close(i);
                         FD_CLR(i, &master_socks);
+                        close(i);
+                        remove_client(i, server);
                     }
                     else {
-                        printf("command got is: %s\n", buffer);
+                        if (is_quit(buffer)) {
+                            handle_cmd(server, i, buffer);
+                            FD_CLR(i, &master_socks);
+                        }
+                        else
+
+                        //printf("command got is: %s\n", buffer);
+                        handle_cmd(server, i, buffer);
                         //if (strstr("USER", buffer))
-                        write(i, "331 \r\n", 6);
+                        //write(i, "331 \r\n", 6);
 
                         //else
                         //    write(ns, "230 \r\n", 6);
-
+                        memset(buffer, 0, MAXLINE);
                     }
+                    //memset(buffer, 0, MAXLINE);
                 }
             }
-            memset(buffer, 0, MAXLINE);
         }
     }
 }

@@ -10,25 +10,31 @@
 
 #include "ftp.h"
 
+#define HELP ("214 following commands are implemented:\nUSER, "\
+"PASS, QUIT, HELP, CWD, PWD, NOOP\r\n")
+#define NOT_TAKEN ("Requested action not taken. File unavailable "\
+"(e.g., file not found, no access).\r\n")
+
 typedef struct cmd
 {
     char *cmd;
-    void (*func)(client_t *, char **);
+    void (*func)(client_t *, char **, server_t *);
 }cmd_t;
-void user(client_t *, char **);
-void pass(client_t *, char **);
-void cwd(client_t *, char **);
-void cdup(client_t *, char **);
-void quit(client_t *, char **);
-void dele(client_t *, char **);
-void pwd(client_t *, char **);
-void pasv(client_t *, char **);
-void port(client_t *, char **);
-void help(client_t *, char **);
-void noop(client_t *, char **);
-void retr(client_t *, char **);
-void stor(client_t *, char **);
-void list(client_t *, char **);
+
+void user(client_t *, char **, server_t *);
+void pass(client_t *, char **, server_t *);
+void cwd(client_t *, char **, server_t *);
+void cdup(client_t *, char **, server_t *);
+void quit(client_t *, char **, server_t *);
+void dele(client_t *, char **, server_t *);
+void pwd(client_t *, char **, server_t *);
+void pasv(client_t *, char **, server_t *);
+void port(client_t *, char **,server_t *);
+void help(client_t *, char **, server_t *);
+void noop(client_t *, char **, server_t *);
+void retr(client_t *, char **, server_t *);
+void stor(client_t *, char **, server_t *);
+void list(client_t *, char **, server_t *);
 
 static const cmd_t cmd_table[] = {
         {"USER", &user},
@@ -45,10 +51,11 @@ static const cmd_t cmd_table[] = {
         {"RETR", &retr},
         {"STOR", &stor},
         {"LIST", &list},
-        NULL
+        {NULL, NULL}
 };
 
-
-
+void handle_cmd(server_t *server, int sd, char *buffer);
+char **my_str_to_word_array(char const *str);
+int my_str_isprintable(char const *str);
 
 #endif //FTP_COMMANDS_H
