@@ -34,22 +34,41 @@ void pass(client_t *client, char **args, server_t *server)
 
 void cwd(client_t *client, char **args, server_t *server)
 {
+    printf("this is requested dir %s\n", args[1]);
     if (client->auth == false) {
         write(client->userfd, "530 Not logged in.\r\n", 20);
         return;
     }
-    if (args[1] && !chdir(args[1])) {
-        write(client->userfd, "250 Requested file action okay, completed\r\n", 43);
-        getcwd(client->curr_dir, PATH_MAX);
+    if (fork() == 0) {
+        close (server->sd);
+        if (args[1] && !chdir(client->curr_dir) && !chdir(args[1])) {
+            write(client->userfd, "250 Requested file action okay, completed\r\n", 43);
+            getcwd(client->curr_dir, PATH_MAX);
+            printf("this is clients curdir %s\n", client->curr_dir);
+
+        } else write(client->userfd, NOT_TAKEN, sizeof(NOT_TAKEN));
+        exit (0);
+
     }
-    else
-        write(client->userfd, NOT_TAKEN, sizeof(NOT_TAKEN));
 }
 
 void cdup(client_t *client, char **args, server_t *server)
 {
-    if (client->auth == false)
+
+    if (client->auth == false) {
         write(client->userfd, "530 Not logged in.\r\n", 20);
+        return;
+    }
+
+    int i = strlen(client->curr_dir);
+    while (client->curr_dir[i] != '/') {
+        --i;
+    }
+    printf("I am here\n");
+    client->curr_dir[i] = '\0';
+    args[1] = strdup(client->curr_dir);
+    cwd(client, args, server);
+
     if (!chdir(client->curr_dir) && !chdir("..")) {
         write(client->userfd, "250 Requested file action okay, completed\r\n", 43);
         getcwd(client->curr_dir, PATH_MAX);

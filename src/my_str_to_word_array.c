@@ -11,11 +11,9 @@ int is_alnum(char const character)
 {
     if (character >= '0' && character <= '9')
         return (1);
-    if (character >= 'a' && character <= 'z')
+    if ((character >= 'a' && character <= 'z') || character == '/')
         return (1);
-    if (character >= 'A' && character <= 'Z')
-        return (1);
-    if (character == '/')
+    if ((character >= 'A' && character <= 'Z') || character == '.')
         return (1);
     return (0);
 }
