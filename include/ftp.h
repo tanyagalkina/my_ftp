@@ -18,7 +18,6 @@
 #include <arpa/inet.h>
 #include <stdbool.h>
 #include <assert.h>
-#include "../include/get_next_line.h"
 
 #define SAIN struct sockaddr_in
 #define SA struct sockaddr
