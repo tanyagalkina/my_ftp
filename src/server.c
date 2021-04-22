@@ -64,7 +64,7 @@ void server_run(int port, char *path)
     signal(SIGINT, sig_handler);
     signal(SIGPIPE, sig_handler);
     signal(SIGTERM, sig_handler);
-    char *buffer;
+    char buffer[MAXLINE];
     //int adlen = sizeof(SA);
     socklen_t  adlen;
     fd_set master_socks;
@@ -97,10 +97,8 @@ void server_run(int port, char *path)
                         fd_max = ns;
                     write(ns, "220 Welcome! Service ready\r\n", 28);
                 } else {
-                    //buffer = get_next_line(i);
-                    //assert(buffer != NULL);
-                    //printf("buffer was%s\n", buffer);
-                    if (
+                    get_input(get_client_by_sd(i, server->conn_list), server, &master_socks, &writy_socks);
+                    /*if (
                             //!strcmp("EXIT\n", buffer) && FD_ISSET(i, &writy_socks))
                             0 == read(i, buffer, MAXLINE) && FD_ISSET(i, &writy_socks))
                     {
@@ -116,16 +114,8 @@ void server_run(int port, char *path)
                         }
                         else
 
-                        //printf("command got is: %s\n", buffer);
                         handle_cmd(server, i, buffer);
-                        //if (strstr("USER", buffer))
-                        //write(i, "331 \r\n", 6);
-
-                        //else
-                        //    write(ns, "230 \r\n", 6);
-                        //memset(buffer, 0, MAXLINE);
-                    }
-                    //memset(buffer, 0, MAXLINE);
+                    }*/
                 }
             }
         }

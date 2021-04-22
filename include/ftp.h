@@ -25,6 +25,8 @@
 #define MAXLINE     (2048)
 #define PATH_MAX    (256)
 
+#include "../include/get_next_line.h"
+
 typedef struct client {
     struct client *next;
     struct client *prev;
@@ -54,6 +56,10 @@ typedef struct server {
 
 }server_t;
 
+
+client_t *get_client_by_sd(int sd, client_t *list);
+void sig_handler(int sig);
+int get_input(client_t *, server_t *server, fd_set *master, fd_set *writy);
 void remove_from_list(client_t *tmp, server_t *server);
 void add_client(server_t *server, int ns,  SS rem_addr, socklen_t adlen);
 void remove_client(int sd, server_t *server);

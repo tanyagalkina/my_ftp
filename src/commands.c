@@ -15,7 +15,10 @@ void user(client_t *client, char **args, server_t *server)
         write(client->userfd, "230 User logged in, proceed.\r\n", 30);
         return;
     }
-    if (!args[1])
+    client->name = strdup(args[1]);
+    write(client->userfd, "331 Username OK, need password\r\n", 32);
+
+    /*if (!args[1])
         write(client->userfd, "430 Invalid username or password\r\n", 34);
 
     if (args[1] && !strcmp("Anonymous", args[1])) {
@@ -23,12 +26,13 @@ void user(client_t *client, char **args, server_t *server)
         write(client->userfd, "331 Username OK, need password\r\n", 32);
     } else {
         write(client->userfd, "430 Invalid username or password\r\n", 34);
-    }
+    }*/
 }
 
 void pass(client_t *client, char **args, server_t *server)
 {
-    if (!args[1]) {
+    printf("PASS\n");
+    if (!args[1] && client->name && !strcmp("Anonymous", client->name)) {
         write(client->userfd, "230 User logged in.\r\n", 21);
         client->auth = TRUE;
         return;
@@ -76,15 +80,17 @@ void cdup(client_t *client, char **args, server_t *server)
 
 void quit(client_t *client, char **args, server_t *server)
 {
+    printf(" I am quit\n");
+    printf("The file descriptor is %d", client->userfd);
     if (client->receiving)
     {
         write(client->userfd, "232 Logout command noted, will complete when transfer done.\r\n", 61);
         client->exit = true;
         return;
     }
-    write(client->userfd, "231 User logged out; service terminated\r\n", 41);
-    close(client->userfd);
-    remove_from_list(client, server);
+    write(client->userfd, "231 User logged out; service terminated\r\n", 47);
+    //close(client->userfd);
+    //remove_from_list(client, server);
 }
 
 void dele(client_t *client, char **args, server_t *server)
