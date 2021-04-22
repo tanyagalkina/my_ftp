@@ -10,7 +10,7 @@
 
 void remove_from_list(client_t *tmp, server_t *server)
 {
-    printf("REMOVE %d\n", tmp->userfd);
+    //printf("REMOVE %d\n", tmp->userfd);
     if (tmp->prev == NULL && tmp->next == NULL) {
         server->conn_list = NULL;
         return;
@@ -18,8 +18,6 @@ void remove_from_list(client_t *tmp, server_t *server)
     else if (tmp->prev == NULL && tmp->next != NULL)
     {
         server->conn_list = tmp->next;
-       // server->conn_list->prev = NULL;
-
     }
 
     else if (tmp->prev && tmp->next)

@@ -87,35 +87,15 @@ void server_run(int port, char *path)
         }
         for (int i = 3; i < (fd_max + 1); i++) {
             if (FD_ISSET(i, &ready_socks)) {
-                ///if the listener has something to read...
                 if (i == server->sd) {
                     ns = accept(server->sd, (SA *)&rem_addr, &adlen);
                     add_client(server, ns, rem_addr, adlen);
-                    ///*******list.add
                     FD_SET(ns, &master_socks);
                     if (ns > fd_max)
                         fd_max = ns;
                     write(ns, "220 Welcome! Service ready\r\n", 28);
                 } else {
                     get_input(get_client_by_sd(i, server->conn_list), server, &master_socks, &writy_socks);
-                    /*if (
-                            //!strcmp("EXIT\n", buffer) && FD_ISSET(i, &writy_socks))
-                            0 == read(i, buffer, MAXLINE) && FD_ISSET(i, &writy_socks))
-                    {
-                        fprintf(stderr, "socket %d is gone... bye!\n", i);
-                        FD_CLR(i, &master_socks);
-                        close(i);
-                        remove_client(i, server);
-                    }
-                    else {
-                        if (is_quit(buffer)) {
-                            handle_cmd(server, i, buffer);
-                            FD_CLR(i, &master_socks);
-                        }
-                        else
-
-                        handle_cmd(server, i, buffer);
-                    }*/
                 }
             }
         }
