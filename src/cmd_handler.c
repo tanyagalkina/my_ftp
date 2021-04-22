@@ -30,8 +30,8 @@ void handle_cmd(server_t *server, int sd, char *buffer)
         write(sd, "501 Syntax error in parameters or arguments.\r\n", 46);
         return;
     }
-    printf("command got is: %s\n", command);
-    printf("user with sd %d says %s with arg %s\n", sd, params[0], params[1]);
+    fprintf(stderr, "command got is: %s\n", command);
+    fprintf(stderr, "user with sd %d says %s with arg %s\n", sd, params[0], params[1]);
 
     while (cmd_table[i].cmd != NULL)
     {
@@ -39,4 +39,5 @@ void handle_cmd(server_t *server, int sd, char *buffer)
             cmd_table[i].func(client, params, server);
         ++i;
     }
+
 }

@@ -35,10 +35,10 @@ static void show_list(client_t *cl_list)
 {
     client_t *tmp = cl_list;
     if (!tmp)
-        printf("We dont have any connected clients at the moment\n");
+        fprintf(stderr, "We dont have any connected clients at the moment\n");
     while(tmp != NULL)
     {
-        printf("we have %d\n", tmp->userfd);
+        fprintf(stderr, "we have %d\n", tmp->userfd);
         tmp = tmp->next;
 
     }
@@ -52,12 +52,9 @@ static void *get_in_addr(SA *sa)
 
 void add_client(server_t *server, int ns, SS rem_addr, socklen_t adlen)
 {
-    char remoteIP[INET_ADDRSTRLEN];
 
-    printf("selectserver: new connection from %s on socket %d\n", inet_ntop(rem_addr.ss_family,
-                                                                            get_in_addr((struct sockaddr*)&rem_addr),
-                                                                            remoteIP, INET_ADDRSTRLEN),
-           ns);
+    //char remoteIP[INET_ADDRSTRLEN];
+
     client_t *new_cl = malloc(sizeof(client_t));
     client_t *tmp = malloc(sizeof(client_t));
     new_cl->name = NULL;
@@ -75,11 +72,17 @@ void add_client(server_t *server, int ns, SS rem_addr, socklen_t adlen)
     new_cl->next = NULL;
     new_cl->prev = NULL;
     new_cl->exit = false;
+    new_cl->transfd = -1;
     new_cl->receiving = false;
+    new_cl->pasv = false;
 
+    fprintf(stderr, "selectserver: new connection from %s on socket %d\n", inet_ntop(rem_addr.ss_family,
+                                                                            get_in_addr((struct sockaddr*)&rem_addr),
+                                                                            new_cl->ip, INET_ADDRSTRLEN),
+           ns);
     if (server->conn_list == NULL) {
         server->conn_list = new_cl;
-        printf("THIS IS OUR FIRST CLIENT %d\n", server->conn_list->userfd);
+        fprintf(stderr, "THIS IS OUR FIRST CLIENT %d\n", server->conn_list->userfd);
     }
     else {
         tmp = server->conn_list;

@@ -25,10 +25,10 @@ void serv_init(server_t *server, int port, char *path)
     }
     server->anon_home = strdup(path);
     server->conn_list = NULL;
-    server->addr.sin_family = AF_INET;
-    server->addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    server->addr.sin_port = htons(port);
-    if (bind(server->sd, (SA *)&server->addr, (int)sizeof(SAIN)) < 0) {
+    server->conn_addr.sin_family = AF_INET;
+    server->conn_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    server->conn_addr.sin_port = htons(port);
+    if (bind(server->sd, (SA *)&server->conn_addr, (int)sizeof(SAIN)) < 0) {
         perror("bind failed");
         exit(84);
     }
@@ -74,9 +74,9 @@ void server_run(int port, char *path)
     FD_ZERO(&ready_socks);
     FD_ZERO(&writy_socks);
     FD_SET(server->sd, &master_socks);
-    //FD_SET(0, &master_socks);
     int sel = 0;
     int fd_max = server->sd;
+    //memset(buffer, 0, MAXLINE);
 
     while (TRUE) {
         ready_socks = master_socks;
@@ -85,7 +85,7 @@ void server_run(int port, char *path)
             perror ("select error");
             exit (84);
         }
-        for (int i = 0; i < (fd_max + 1); i++) {
+        for (int i = 3; i < (fd_max + 1); i++) {
             if (FD_ISSET(i, &ready_socks)) {
                 ///if the listener has something to read...
                 if (i == server->sd) {
@@ -104,7 +104,7 @@ void server_run(int port, char *path)
                             //!strcmp("EXIT\n", buffer) && FD_ISSET(i, &writy_socks))
                             0 == read(i, buffer, MAXLINE) && FD_ISSET(i, &writy_socks))
                     {
-                        printf("socket %d is gone... bye!\n", i);
+                        fprintf(stderr, "socket %d is gone... bye!\n", i);
                         FD_CLR(i, &master_socks);
                         close(i);
                         remove_client(i, server);
@@ -123,7 +123,7 @@ void server_run(int port, char *path)
 
                         //else
                         //    write(ns, "230 \r\n", 6);
-                        memset(buffer, 0, MAXLINE);
+                        //memset(buffer, 0, MAXLINE);
                     }
                     //memset(buffer, 0, MAXLINE);
                 }

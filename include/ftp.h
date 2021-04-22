@@ -36,21 +36,23 @@ typedef struct client {
     bool auth;
     bool receiving;
     bool exit;
+    bool pasv;
     FILE *inc_file;
     SS *claddr;
     socklen_t addr_len;
+    char ip[INET_ADDRSTRLEN];
 
 }client_t;
 
 typedef struct server {
     int sd;
-    SAIN addr;
+    SAIN conn_addr;
+    SAIN data_addr;
     char *anon_home;
     int pid;
     client_t *conn_list;
 
 }server_t;
-
 
 void remove_from_list(client_t *tmp, server_t *server);
 void add_client(server_t *server, int ns,  SS rem_addr, socklen_t adlen);

@@ -10,10 +10,14 @@
 
 void user(client_t *client, char **args, server_t *server)
 {
+    fprintf(stderr, "I am user cmd\n");
     if (client->auth) {
         write(client->userfd, "230 User logged in, proceed.\r\n", 30);
         return;
     }
+    if (!args[1])
+        write(client->userfd, "430 Invalid username or password\r\n", 34);
+
     if (args[1] && !strcmp("Anonymous", args[1])) {
         client->name = strdup(args[1]);
         write(client->userfd, "331 Username OK, need password\r\n", 32);
@@ -39,17 +43,12 @@ void cwd(client_t *client, char **args, server_t *server)
         write(client->userfd, "530 Not logged in.\r\n", 20);
         return;
     }
-    if (fork() == 0) {
-        close (server->sd);
         if (args[1] && !chdir(client->curr_dir) && !chdir(args[1])) {
             write(client->userfd, "250 Requested file action okay, completed\r\n", 43);
             getcwd(client->curr_dir, PATH_MAX);
             printf("this is clients curdir %s\n", client->curr_dir);
 
         } else write(client->userfd, NOT_TAKEN, sizeof(NOT_TAKEN));
-        exit (0);
-
-    }
 }
 
 void cdup(client_t *client, char **args, server_t *server)
@@ -64,7 +63,6 @@ void cdup(client_t *client, char **args, server_t *server)
     while (client->curr_dir[i] != '/') {
         --i;
     }
-    printf("I am here\n");
     client->curr_dir[i] = '\0';
     args[1] = strdup(client->curr_dir);
     cwd(client, args, server);
@@ -91,26 +89,44 @@ void quit(client_t *client, char **args, server_t *server)
 
 void dele(client_t *client, char **args, server_t *server)
 {
-    if (client->auth == false)
+    if (client->auth == false) {
         write(client->userfd, "530 Not logged in.\r\n", 20);
+        return;
+    }
 }
 
 void pwd(client_t *client, char **args, server_t *server)
 {
-    if (client->auth == false)
+    if (client->auth == false) {
         write(client->userfd, "530 Not logged in.\r\n", 20);
+        return;
+    }
+
 }
 
-void pasv(client_t *client, char **args, server_t *server)
+/*void pasv(client_t *client, char **args, server_t *server)
 {
-    if (client->auth == false)
+    if (client->transfd)
+    if (client->auth == false) {
         write(client->userfd, "530 Not logged in.\r\n", 20);
-}
+        return;
+    }
+    if (client->transfd != -1) {
+        write(client->userfd, "225 Data connection open; no transfer in progress.\r\n", 52);
+        return;
+    }
+}*/
 
 void port(client_t *client, char **args, server_t *server)
 {
-    if (client->auth == false)
+    if (client->auth == false) {
         write(client->userfd, "530 Not logged in.\r\n", 20);
+        return;
+    }
+    if (client->transfd != -1) {
+        write(client->userfd, "225 Data connection open; no transfer in progress.\r\n", 52);
+        return;
+    }
 }
 
 void help(client_t *client, char **args, server_t *server)
@@ -120,9 +136,7 @@ void help(client_t *client, char **args, server_t *server)
 
 void noop(client_t *client, char **args, server_t *server)
 {
-    if (client->auth == false) {
-        write(client->userfd, "530 Not logged in.\r\n", 20);
-    }
+    write(client->userfd, "200 I am chilling, everything is fine!\r\n", 40);
 }
 
 void retr(client_t *client, char **args, server_t *server)
@@ -148,5 +162,3 @@ void list(client_t *client, char **args, server_t *server)
         return;
     }
 }
-
-
