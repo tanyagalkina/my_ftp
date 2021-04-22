@@ -18,7 +18,9 @@ SRCS	=	./src/main.c 		\
 		./src/cmd_handler.c	\
 		./src/my_str_to_word_array.c	\
 		./src/my_str_isprintable.c	\
-		./src/pasv.c
+		./src/pasv.c		\
+		./src/get_input.c	\
+		./src/get_next_line.c	\
 
 OBJS	= $(SRCS:.c=.o)
 
