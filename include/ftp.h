@@ -25,7 +25,6 @@
 #define MAXLINE     (2048)
 #define PATH_MAX    (256)
 
-#include "../include/get_next_line.h"
 
 typedef struct client {
     struct client *next;

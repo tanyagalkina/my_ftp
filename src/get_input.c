@@ -9,8 +9,6 @@
 #include "../include/ftp.h"
 #include "../include/commands.h"
 
-
-
 static int is_quit(char *buffer)
 {
     if (!strcmp("QUIT", buffer))
