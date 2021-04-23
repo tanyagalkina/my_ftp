@@ -48,7 +48,7 @@ void sig_handler(int sig)
 
 static int is_quit(char *buffer)
 {
-    char *command = strsep(&buffer, "\r\n");
+    char *command = strsep(&buffer, "\n");
     char **params = my_str_to_word_array(command);
     if (!strcmp("QUIT", params[0]) && params[1] == NULL)
         return (1);
@@ -64,7 +64,6 @@ void server_run(int port, char *path)
     signal(SIGINT, sig_handler);
     signal(SIGPIPE, sig_handler);
     signal(SIGTERM, sig_handler);
-    char buffer[MAXLINE];
     //int adlen = sizeof(SA);
     socklen_t  adlen;
     fd_set master_socks;
@@ -74,9 +73,7 @@ void server_run(int port, char *path)
     FD_ZERO(&ready_socks);
     FD_ZERO(&writy_socks);
     FD_SET(server->sd, &master_socks);
-    int sel = 0;
     int fd_max = server->sd;
-    //memset(buffer, 0, MAXLINE);
 
     while (TRUE) {
         ready_socks = master_socks;

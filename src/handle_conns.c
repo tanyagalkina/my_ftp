@@ -75,11 +75,13 @@ void add_client(server_t *server, int ns, SS rem_addr, socklen_t adlen)
     new_cl->transfd = -1;
     new_cl->receiving = false;
     new_cl->pasv = false;
+    new_cl->addr = (SA *)&rem_addr;
 
-    fprintf(stderr, "selectserver: new connection from %s on socket %d\n", inet_ntop(rem_addr.ss_family,
-                                                                            get_in_addr((struct sockaddr*)&rem_addr),
-                                                                            new_cl->ip, INET_ADDRSTRLEN),
-           ns);
+    char *adr = inet_ntop(rem_addr.ss_family, get_in_addr((struct sockaddr *)&rem_addr), \
+new_cl->ip, INET_ADDRSTRLEN);
+
+    fprintf(stderr, "selectserver: new connection from %s on socket %d\n",
+              adr,ns);
     if (server->conn_list == NULL) {
         server->conn_list = new_cl;
         fprintf(stderr, "THIS IS OUR FIRST CLIENT %d\n", server->conn_list->userfd);

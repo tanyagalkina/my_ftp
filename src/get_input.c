@@ -30,8 +30,8 @@ int get_input(client_t *client, server_t *server, fd_set *master_socks, fd_set *
     else {
         if (is_quit(buffer)) {
             quit(client, NULL, server);
-            remove_client(client->userfd, server);
             close(client->userfd);
+            remove_client(client->userfd, server);
             FD_CLR(client->userfd, master_socks);
         }
         else {

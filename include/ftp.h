@@ -40,6 +40,7 @@ typedef struct client {
     bool pasv;
     FILE *inc_file;
     SS *claddr;
+    SA *addr;
     socklen_t addr_len;
     char ip[INET_ADDRSTRLEN];
 

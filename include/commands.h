@@ -10,11 +10,6 @@
 
 #include "ftp.h"
 
-#define HELP ("214 following commands are implemented:\nUSER, "\
-"PASS, QUIT, HELP, CWD, PWD, NOOP\r\n")
-#define NOT_TAKEN ("Requested action not taken. File unavailable "\
-"(e.g., file not found, no access).\r\n")
-
 typedef struct cmd
 {
     char *cmd;
