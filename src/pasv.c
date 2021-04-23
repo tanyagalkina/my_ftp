@@ -42,7 +42,7 @@ void pasv(client_t *client, char **args, server_t *server)
     if ((client->transfd = create_passive_socket(2130706433)) == -1) {
         write(client->userfd, "550 Unable to enter in passive mode.\r\n", 38);
     }
-    ip_addr.s_addr = client->ip;
+    ip_addr.s_addr = NULL;
     client->pasv = true;
     write(client->userfd, "227 Entering passive mode (\r\n", 29);
 }
