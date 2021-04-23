@@ -9,6 +9,8 @@
 #define FTP_COMMANDS_H
 
 #include "ftp.h"
+#define HELP ("214 USER PASS CWD CDUP QUIT \
+DELE PWD PASV PORT HELP NOOP RETR STOR LIST\r\n")
 
 typedef struct cmd
 {

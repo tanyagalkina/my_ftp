@@ -10,7 +10,6 @@
 
 void user(client_t *client, char **args, server_t *server)
 {
-    fprintf(stderr, "I am user cmd\n");
     if (client->auth) {
         write(client->userfd, "230 User logged in, proceed.\r\n", 30);
         return;
@@ -66,17 +65,14 @@ void cdup(client_t *client, char **args, server_t *server)
 
 void quit(client_t *client, char **args, server_t *server)
 {
-    //printf("I am quit\n");
-    /*printf("The file descriptor is %d", client->userfd);
     if (client->receiving)
     {
         write(client->userfd, "232 Logout command noted, will complete when transfer done.\r\n", 61);
         client->exit = true;
         return;
-    }*/
+    }
     write(client->userfd, "221 See you later!\r\n", 20);
-    //close(client->userfd);
-    //remove_from_list(client, server);
+    client->auth = false;
 }
 
 void dele(client_t *client, char **args, server_t *server)
@@ -113,7 +109,7 @@ void port(client_t *client, char **args, server_t *server)
 
 void help(client_t *client, char **args, server_t *server)
 {
-    write(client->userfd, "214\r\n", 5);
+    write(client->userfd, HELP, sizeof(HELP));
 }
 
 void noop(client_t *client, char **args, server_t *server)
@@ -140,7 +136,12 @@ void stor(client_t *client, char **args, server_t *server)
 void list(client_t *client, char **args, server_t *server)
 {
     if (client->auth == false) {
-        write(client->userfd, "530 Not logged in.\r\n", 20);
-        return;
+        return ((void)write(client->userfd, "530 Not logged in.\r\n", 20));
     }
+    if (client->transfd < 0) {
+        write(client->userfd, "425 No data connection.\r\n", 25);
+    }
+
+
+
 }
