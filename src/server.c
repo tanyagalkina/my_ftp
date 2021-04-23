@@ -32,7 +32,7 @@ void serv_init(server_t *server, int port, char *path)
         perror("bind failed");
         exit(84);
     }
-    if (listen(server->sd, 3) < 0) {
+    if (listen(server->sd, 10) < 0) {
         perror("listen");
         exit(84);
     }
@@ -78,6 +78,7 @@ void server_run(int port, char *path)
     while (TRUE) {
         ready_socks = master_socks;
         writy_socks = master_socks;
+        //if (select(FD_SETSIZE, &ready_socks, &writy_socks, NULL, NULL) < 0) {
         if (select(fd_max + 1, &ready_socks, &writy_socks, NULL, NULL) < 0) {
             perror ("select error");
             exit (84);

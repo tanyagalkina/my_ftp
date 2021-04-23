@@ -10,7 +10,6 @@
 
 void remove_from_list(client_t *tmp, server_t *server)
 {
-    //printf("REMOVE %d\n", tmp->userfd);
     if (tmp->prev == NULL && tmp->next == NULL) {
         server->conn_list = NULL;
         return;
@@ -18,17 +17,15 @@ void remove_from_list(client_t *tmp, server_t *server)
     else if (tmp->prev == NULL && tmp->next != NULL)
     {
         server->conn_list = tmp->next;
+        server->conn_list->prev = NULL;
     }
-
     else if (tmp->prev && tmp->next)
     {
         tmp->next->prev = tmp->prev;
     }
-    ///if it is the last node
     if (tmp->next == NULL) {
         tmp = NULL;
     }
-
 }
 
 static void show_list(client_t *cl_list)
@@ -52,9 +49,6 @@ static void *get_in_addr(SA *sa)
 
 void add_client(server_t *server, int ns, SS rem_addr, socklen_t adlen)
 {
-
-    //char remoteIP[INET_ADDRSTRLEN];
-
     client_t *new_cl = malloc(sizeof(client_t));
     client_t *tmp = malloc(sizeof(client_t));
     new_cl->name = NULL;

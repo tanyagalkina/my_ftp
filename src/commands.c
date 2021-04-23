@@ -58,7 +58,8 @@ void cdup(client_t *client, char **args, server_t *server)
     if (!chdir(client->curr_dir)) {
         write(client->userfd, "200 Requested file action okay, completed\r\n", 43);
         getcwd(client->curr_dir, PATH_MAX);
-        printf("The dir after CDUP is %s\n", client->curr_dir);
+        printf("curr_dir len: %d\n", strlen(client->curr_dir));
+        //printf("The dir after CDUP is %s\n", client->curr_dir);
     } else
         write(client->userfd, "550\r\n", 5);
 }
@@ -73,6 +74,7 @@ void quit(client_t *client, char **args, server_t *server)
     }
     write(client->userfd, "221 See you later!\r\n", 20);
     client->auth = false;
+    //client->userfd = -1;
 }
 
 void dele(client_t *client, char **args, server_t *server)
