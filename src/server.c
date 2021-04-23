@@ -64,7 +64,6 @@ void server_run(int port, char *path)
     signal(SIGINT, sig_handler);
     signal(SIGPIPE, sig_handler);
     signal(SIGTERM, sig_handler);
-    //int adlen = sizeof(SA);
     socklen_t  adlen;
     fd_set master_socks;
     fd_set ready_socks;
@@ -74,11 +73,9 @@ void server_run(int port, char *path)
     FD_ZERO(&writy_socks);
     FD_SET(server->sd, &master_socks);
     int fd_max = server->sd;
-
     while (TRUE) {
         ready_socks = master_socks;
         writy_socks = master_socks;
-        //if (select(FD_SETSIZE, &ready_socks, &writy_socks, NULL, NULL) < 0) {
         if (select(fd_max + 1, &ready_socks, &writy_socks, NULL, NULL) < 0) {
             perror ("select error");
             exit (84);
@@ -93,10 +90,10 @@ void server_run(int port, char *path)
                         fd_max = ns;
                     write(ns, "220 Welcome! Service ready\r\n", 28);
                 } else {
-                    get_input(get_client_by_sd(i, server->conn_list), server, &master_socks, &writy_socks);
+                    get_input(get_client_by_sd(i, server->conn_list), server, \
+&master_socks, &writy_socks);
                 }
             }
         }
     }
 }
-

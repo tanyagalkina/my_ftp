@@ -37,9 +37,7 @@ static void show_list(client_t *cl_list)
     {
         fprintf(stderr, "we have %d\n", tmp->userfd);
         tmp = tmp->next;
-
     }
-
 }
 
 static void *get_in_addr(SA *sa)

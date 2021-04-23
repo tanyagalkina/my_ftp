@@ -43,9 +43,6 @@ void pasv(client_t *client, char **args, server_t *server)
         write(client->userfd, "550 Unable to enter in passive mode.\r\n", 38);
     }
     ip_addr.s_addr = client->ip;
-    //sprintf(msg, "227 Entering passive mode (%s).", inet_ntoa(ip_addr));
     client->pasv = true;
-    write(client->userfd, "227 Entering passive mode (", 27);
-    //write(client->userfd, inet_ntoa(ip_addr), sizeof(inet_ntoa(ip_addr)));
+    write(client->userfd, "227 Entering passive mode (\r\n", 29);
 }
-
