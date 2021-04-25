@@ -32,7 +32,7 @@ static void display_help()
 "the Anonymous user\n");
 }
 
-int main(int ac, char **av,char **envp)
+int main(int ac, char **av, char **envp)
 {
     int ret = 0;
     (void)envp;

@@ -33,7 +33,7 @@ void pasv(client_t *client, char **args, server_t *server)
             return;
         }
     if (client->transfd != -1) {
-        write(client->userfd, "225 Data connection open; no transfer in progress.\r\n", 52);
+        write(client->userfd, "225 Data connection open.\r\n", 27);
         return;
     }
     char			msg[1024];

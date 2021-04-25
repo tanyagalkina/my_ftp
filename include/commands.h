@@ -9,9 +9,6 @@
 #define FTP_COMMANDS_H
 
 #include "ftp.h"
-#include <stdio.h>
-#define HELP ("214 USER PASS CWD CDUP QUIT \
-DELE PWD PASV PORT HELP NOOP RETR STOR LIST\r\n")
 
 typedef struct cmd
 {
@@ -27,7 +24,7 @@ void quit(client_t *, char **, server_t *);
 void dele(client_t *, char **, server_t *);
 void pwd(client_t *, char **, server_t *);
 void pasv(client_t *, char **, server_t *);
-void port(client_t *, char **,server_t *);
+void port(client_t *, char **, server_t *);
 void help(client_t *, char **, server_t *);
 void noop(client_t *, char **, server_t *);
 void retr(client_t *, char **, server_t *);
@@ -36,7 +33,7 @@ void list(client_t *, char **, server_t *);
 
 static const cmd_t cmd_table[] = {
         {"USER", &user},
-        {"PASS",&pass},
+        {"PASS", &pass},
         {"CWD", &cwd},
         {"CDUP", &cdup},
         {"QUIT", &quit},

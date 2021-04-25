@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2020
 ** NWP, myftp
 ** File description:
-** src
+** header
 */
 
 #pragma once
@@ -20,13 +20,13 @@
 #include <assert.h>
 #include <signal.h>
 #include <bits/signum.h>
+#include <curses.h>
 
 #define SAIN struct sockaddr_in
 #define SA struct sockaddr
 #define SS struct sockaddr_storage
 #define MAXLINE     (2048)
 #define PATH_MAX    (256)
-
 
 typedef struct client {
     struct client *next;
@@ -45,7 +45,6 @@ typedef struct client {
     SA *addr;
     socklen_t addr_len;
     char ip[INET_ADDRSTRLEN];
-
 }client_t;
 
 typedef struct server {
@@ -58,17 +57,17 @@ typedef struct server {
     fd_set master;
     fd_set read;
     fd_set write;
-
 }server_t;
 
-
-
+void remove_from_list(client_t *tmp, server_t *server);
+void add_to_list(server_t *server, client_t *new_cl);
+void show_list(client_t *cl_list);
 void set_signals(void);
 void sig_handler(int sig);
 void show_list(client_t *cl_list);
 client_t *get_client_by_sd(int sd, client_t *list);
 void sig_handler(int sig);
-int get_input(client_t *, server_t *server, fd_set *master, fd_set *writy);
+int get_input(client_t *, server_t *server);
 void remove_from_list(client_t *tmp, server_t *server);
 void add_client(server_t *server, int ns,  SS rem_addr, socklen_t adlen);
 void remove_client(int sd, server_t *server);

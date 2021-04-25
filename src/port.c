@@ -18,4 +18,3 @@ void port(client_t *client, char **args, server_t *server)
     else
         write(client->userfd, "200\r\n", 5);
 }
-

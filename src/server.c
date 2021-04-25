@@ -5,9 +5,6 @@
 ** src
 */
 
-#include <signal.h>
-#include <bits/signum.h>
-#include <curses.h>
 #include "../include/ftp.h"
 #include "../include/commands.h"
 
@@ -68,13 +65,6 @@ void accept_new(server_t *server, fd_set *master_socks, int *fd_max)
     write(ns, "220 Welcome! Service ready\r\n", 28);
 }
 
-/*static void set_signals(void)
-{
-    signal(SIGINT, sig_handler);
-    signal(SIGPIPE, sig_handler);
-    signal(SIGTERM, sig_handler);
-}*/
-
 void server_run(int port, char *path)
 {
     server_t *s = serv_init(port, path);
@@ -92,8 +82,7 @@ void server_run(int port, char *path)
             accept_new(s, &s->master, &fd_max);
         for (int i = 3; i < (fd_max + 1); i++) {
             if (i != s->sd && FD_ISSET(i, &s->read))
-                get_input(get_client_by_sd(i, s->conn_list), \
-s, &s->master, &s->write);
+                get_input(get_client_by_sd(i, s->conn_list), s);
         }
     }
 }

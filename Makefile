@@ -21,7 +21,12 @@ SRCS	=	./src/main.c 		\
 		./src/pasv.c		\
 		./src/get_input.c	\
 		./src/port.c		\
-		./src/sig_tools.c
+		./src/sig_tools.c	\
+		./src/cmd_2.c		\
+		./src/retr.c		\
+		./src/stor.c		\
+		./src/list.c		\
+		./src/list_tools.c		
 
 OBJS	= $(SRCS:.c=.o)
 
