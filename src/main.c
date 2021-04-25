@@ -35,6 +35,7 @@ static void display_help()
 int main(int ac, char **av, char **envp)
 {
     int ret = 0;
+    socklen_t adlen;
     (void)envp;
     if (ac == 2 && !strcmp("-help", av[1])) {
         display_help();
@@ -45,7 +46,7 @@ int main(int ac, char **av, char **envp)
         return (84);
     }
     if (is_valid_port(av[1]) && !chdir(av[2]))
-        server_run(atoi(av[1]), av[2]);
+        server_run(atoi(av[1]), av[2], adlen);
     else
         ret = 84;
     return (ret);

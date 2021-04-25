@@ -18,6 +18,7 @@ static void print_welcome(SS rem_addr, client_t *new_cl, int ns)
 get_in_addr((struct sockaddr *)&rem_addr), \
 new_cl->ip, INET_ADDRSTRLEN);
     fprintf(stderr, "new conn from %s on socket %d\n", adr, ns);
+    new_cl->strip = strdup(adr);
 }
 
 client_init_aid(client_t *new_cl, server_t *s)

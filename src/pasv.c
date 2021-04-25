@@ -37,7 +37,7 @@ void pasv(client_t *client, char **args, server_t *server)
         write(client->userfd, "550 Unable to enter in passive mode.\r\n", 38);
     else {
         write(client->userfd, "227 Entering Passive Mode (", 27);
-        char **my_ip = my_str_to_word_array(client->ip);
+        char **my_ip = my_str_to_word_array(client->strip);
         while (my_ip[i]) {
             dprintf(client->userfd, "%s,", my_ip[i]);
             ++i;

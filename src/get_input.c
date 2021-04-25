@@ -12,9 +12,13 @@ static int is_quit(char *buffer)
 {
     char **params = my_str_to_word_array(buffer);
     if (!params[0]) {
+        for (int i = 0; i < MAXLINE; ++i)
+            buffer[i] = '\0';
         return 2;
     }
     if (!strcmp("QUIT", params[0])) {
+        for (int i = 0; i < MAXLINE; ++i)
+            buffer[i] = '\0';
         return (1);
     } else
         return (0);
@@ -32,7 +36,6 @@ read(cl->userfd, &buffer, MAXLINE)) {
         return (0);
     }
     else if (is_quit(buffer) == 1) {
-        printf("I am quit\n");
         FD_CLR(cl->userfd, &s->master);
         quit(cl, NULL, s);
         return (0);

@@ -23,6 +23,13 @@ int get_socket(void)
     }
     return (sock);
 }
+void set_up_select(server_t *s)
+{
+    FD_ZERO(&s->master);
+    FD_ZERO(&s->read);
+    FD_ZERO(&s->write);
+    FD_SET(s->sd, &s->master);
+}
 
 server_t *serv_init(int port, char *path)
 {
@@ -41,46 +48,22 @@ server_t *serv_init(int port, char *path)
         perror("listen");
         exit(84);
     }
+    set_signals();
+    set_up_select(server);
     return server;
 }
 
-void set_up_select(server_t *s)
-{
-    FD_ZERO(&s->master);
-    FD_ZERO(&s->read);
-    FD_ZERO(&s->write);
-    FD_SET(s->sd, &s->master);
-}
-
-void accept_new(server_t *server, fd_set *master_socks, int *fd_max)
-{
-    socklen_t adlen;
-    int ns = -1;
-    SS rem_addr;
-    ns = accept(server->sd, (SA *)&rem_addr, &adlen);
-    add_client(server, ns, rem_addr, adlen);
-    FD_SET(ns, master_socks);
-    if (ns > *fd_max)
-        *fd_max = ns;
-    write(ns, "220 Welcome! Service ready\r\n", 28);
-}
-
-void server_run(int port, char *path)
+void server_run(int port, char *path, socklen_t adlen)
 {
     server_t *s = serv_init(port, path);
-    set_signals();
-    set_up_select(s);
     int fd_max = s->sd;
-    int ns = -1;
     SS rem_addr;
-    socklen_t adlen;
+    int ns = -1;
     while (TRUE) {
         s->read = s->master;
         s->write = s->master;
-        if (select(fd_max + 1, &s->read, &s->write, NULL, NULL) < 0) {
-            perror("select error");
-            exit(84);
-        }
+        if (select(fd_max + 1, &s->read, &s->write, NULL, NULL) < 0)
+            exit (84);
         for (int i = 3; i < (fd_max + 1); i++) {
             if (FD_ISSET(i, &s->read)) {
                 if (i == s->sd) {
@@ -90,10 +73,5 @@ void server_run(int port, char *path)
                     if (ns > fd_max)
                         fd_max = ns;
                     write(ns, "220 Welcome! Service ready\r\n", 28);
-                } else {
-                    get_input(get_client_by_sd(i, s->conn_list), s);
-                }
-            }
-        }
-    }
+                } else {get_input(get_client_by_sd(i, s->conn_list), s);}}}}
 }
