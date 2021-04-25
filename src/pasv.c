@@ -25,9 +25,6 @@ static int do_pasv(server_t *server, client_t *client)
         return (-1);
     client->pasv = true;
     client->p_port = ntohs(dataddr.sin_port);
-
-    printf("New connection , socket fd is %d , ip is : %s , port : %d\n", \
-client->transfd , inet_ntoa(client->in_adr->sin_addr) , ntohs(dataddr.sin_port));
     return (0);
 }
 
@@ -46,6 +43,6 @@ void pasv(client_t *client, char **args, server_t *server)
             ++i;
         }
         dprintf(client->userfd, "%d,%d).\r\n", client->p_port / 256, \
-		client->p_port % 256);
+client->p_port % 256);
     }
 }

@@ -8,12 +8,6 @@
 #include "../include/ftp.h"
 #include "../include/commands.h"
 
-void clean_buffer(char *buffer)
-{
-    for (int i = 0; i < MAXLINE; ++i)
-        buffer[i] = '\0';
-}
-
 client_t *get_client_by_sd(int sd, client_t *list)
 {
     client_t *tmp = list;
@@ -29,7 +23,6 @@ void handle_cmd(server_t *server, int sd, char *buffer)
     client_t *client = get_client_by_sd(sd, server->conn_list);
     int i = 0;
     char **params = my_str_to_word_array(buffer);
-
     if (!my_str_isprintable(params[0])) {
         write(sd, "500 Syntax error in parameters or arguments.\r\n", 46);
         return;

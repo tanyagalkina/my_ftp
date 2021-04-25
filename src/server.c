@@ -57,7 +57,6 @@ void accept_new(server_t *server, fd_set *master_socks, int *fd_max)
     socklen_t adlen;
     int ns = -1;
     SS rem_addr;
-    //SAIN rem_addr;
     ns = accept(server->sd, (SA *)&rem_addr, &adlen);
     add_client(server, ns, rem_addr, adlen);
     FD_SET(ns, master_socks);
@@ -72,6 +71,9 @@ void server_run(int port, char *path)
     set_signals();
     set_up_select(s);
     int fd_max = s->sd;
+    int ns = -1;
+    SS rem_addr;
+    socklen_t adlen;
     while (TRUE) {
         s->read = s->master;
         s->write = s->master;
@@ -79,11 +81,19 @@ void server_run(int port, char *path)
             perror("select error");
             exit(84);
         }
-        if (FD_ISSET(s->sd, &s->read))
-            accept_new(s, &s->master, &fd_max);
         for (int i = 3; i < (fd_max + 1); i++) {
-            if (i != s->sd && FD_ISSET(i, &s->read))
-                get_input(get_client_by_sd(i, s->conn_list), s);
+            if (FD_ISSET(i, &s->read)) {
+                if (i == s->sd) {
+                    ns = accept(s->sd, (SA *)&rem_addr, &adlen);
+                    add_client(s, ns, rem_addr, adlen);
+                    FD_SET(ns, &s->master);
+                    if (ns > fd_max)
+                        fd_max = ns;
+                    write(ns, "220 Welcome! Service ready\r\n", 28);
+                } else {
+                    get_input(get_client_by_sd(i, s->conn_list), s);
+                }
+            }
         }
     }
 }

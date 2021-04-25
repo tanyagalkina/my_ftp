@@ -62,5 +62,6 @@ void quit(client_t *client, char **args, server_t *server)
 {
     write(client->userfd, "221 See you later!\r\n", 20);
     client->auth = false;
+    close(client->userfd);
     remove_client(client->userfd, server);
 }

@@ -46,7 +46,6 @@ typedef struct client {
     SS *claddr;
     SA *addr;
     socklen_t addr_len;
-    //char *ip;
     char ip[INET_ADDRSTRLEN];
 }client_t;
 
