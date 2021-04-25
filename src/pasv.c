@@ -36,7 +36,6 @@ void pasv(client_t *client, char **args, server_t *server)
         write(client->userfd, "225 Data connection open; no transfer in progress.\r\n", 52);
         return;
     }
-
     char			msg[1024];
     struct in_addr	ip_addr;
     if ((client->transfd = create_passive_socket(2130706433)) == -1) {

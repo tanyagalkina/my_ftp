@@ -35,11 +35,11 @@ void cwd(client_t *client, char **args, server_t *server)
         write(client->userfd, "530 Not logged in.\r\n", 20);
         return;
     }
-        if (args[1] && !chdir(client->curr_dir) && !chdir(args[1])) {
-            write(client->userfd, "250 Requested file action okay, completed\r\n", 43);
-            getcwd(client->curr_dir, PATH_MAX);
-            printf("this is clients curdir %s\n", client->curr_dir);
-        } else write(client->userfd, "550\r\n", 5);
+    if (args[1] && !chdir(client->curr_dir) && !chdir(args[1])) {
+        write(client->userfd, "250 Requested file action okay, completed\r\n", 43);
+        getcwd(client->curr_dir, PATH_MAX);
+        printf("this is clients curdir %s\n", client->curr_dir);
+    } else write(client->userfd, "550\r\n", 5);
 }
 
 void cdup(client_t *client, char **args, server_t *server)
@@ -58,7 +58,7 @@ void cdup(client_t *client, char **args, server_t *server)
     if (!chdir(client->curr_dir)) {
         write(client->userfd, "200 Requested file action okay, completed\r\n", 43);
         getcwd(client->curr_dir, PATH_MAX);
-        printf("curr_dir len: %d\n", strlen(client->curr_dir));
+        //printf("curr_dir len: %d\n", strlen(client->curr_dir));
         //printf("The dir after CDUP is %s\n", client->curr_dir);
     } else
         write(client->userfd, "550\r\n", 5);
@@ -66,23 +66,21 @@ void cdup(client_t *client, char **args, server_t *server)
 
 void quit(client_t *client, char **args, server_t *server)
 {
-    if (client->receiving)
-    {
-        write(client->userfd, "232 Logout command noted, will complete when transfer done.\r\n", 61);
-        client->exit = true;
-        return;
-    }
     write(client->userfd, "221 See you later!\r\n", 20);
-    client->auth = false;
-    //client->userfd = -1;
+    close(client->userfd);
+    remove_client(client->userfd, server);
 }
 
 void dele(client_t *client, char **args, server_t *server)
 {
     if (client->auth == false) {
-        write(client->userfd, "530 Not logged in.\r\n", 20);
+        return ((void)(write(client->userfd, "530 Not logged in.\r\n", 20)));
         return;
     }
+    else if (args[1] && remove(args[1]) == 0)
+        write(client->userfd, "250 file deleted\r\n", 18);
+    else
+        write(client->userfd, "550\r\n", 5);
 }
 
 void pwd(client_t *client, char **args, server_t *server)
@@ -96,22 +94,24 @@ void pwd(client_t *client, char **args, server_t *server)
     write(client->userfd, "\r\n", 2);
 }
 
-void port(client_t *client, char **args, server_t *server)
+/*void port(client_t *client, char **args, server_t *server)
 {
     if (client->auth == false) {
         write(client->userfd, "530 Not logged in.\r\n", 20);
         return;
     }
-    if (client->transfd != -1) {
-        write(client->userfd, "225 Data connection open; no transfer in progress.\r\n", 52);
-        return;
-    }
-    write(client->userfd, "200\r\n", 5);
-}
+    if (!args[1])
+        write(client->userfd, "500 Wrong PORT command\r\n", 24);
+    else
+        write(client->userfd, "200\r\n", 5);
+}*/
 
 void help(client_t *client, char **args, server_t *server)
 {
-    write(client->userfd, HELP, sizeof(HELP));
+    write(client->userfd, "214 The following commands are implemented:\r\n", 45);
+    write(client->userfd, "USER PASS CWD CDUP QUIT\r\n", 25);
+    write(client->userfd, "DELE PWD PASV PORT HELP NOOP RETR STOR LIST\r\n", 45);
+    write(client->userfd, "214 Help.\r\n", 11);
 }
 
 void noop(client_t *client, char **args, server_t *server)
@@ -143,7 +143,4 @@ void list(client_t *client, char **args, server_t *server)
     if (client->transfd < 0) {
         write(client->userfd, "425 No data connection.\r\n", 25);
     }
-
-
-
 }

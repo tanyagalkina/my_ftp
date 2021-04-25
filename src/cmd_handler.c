@@ -8,6 +8,14 @@
 #include "../include/ftp.h"
 #include "../include/commands.h"
 
+void clean_buffer(char *buffer)
+{
+    for (int i = 0; i < MAXLINE; ++i)
+    {
+        buffer[i] = '\0';
+    }
+}
+
 client_t *get_client_by_sd(int sd, client_t *list)
 {
     client_t *tmp = list;
@@ -28,12 +36,12 @@ void handle_cmd(server_t *server, int sd, char *buffer)
         return;
     }
     while (cmd_table[i].cmd != NULL) {
-        if (!strcmp(cmd_table[i].cmd, params[0])) {
-            cmd_table[i].func(client, params, server);
-            break;
+            if (!strcmp(cmd_table[i].cmd, params[0])) {
+                cmd_table[i].func(client, params, server);
+                break;
+            }
+            ++i;
         }
-        ++i;
-    }
-    if (i == 14)
-        write(client->userfd, "500 Bad command.\r\n", 18);
+        if (i == 14)
+            write(client->userfd, "500 Bad command.\r\n", 18);
 }

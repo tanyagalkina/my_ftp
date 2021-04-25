@@ -18,6 +18,8 @@
 #include <arpa/inet.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <signal.h>
+#include <bits/signum.h>
 
 #define SAIN struct sockaddr_in
 #define SA struct sockaddr
@@ -53,10 +55,17 @@ typedef struct server {
     char *anon_home;
     int pid;
     client_t *conn_list;
+    fd_set master;
+    fd_set read;
+    fd_set write;
 
 }server_t;
 
 
+
+void set_signals(void);
+void sig_handler(int sig);
+void show_list(client_t *cl_list);
 client_t *get_client_by_sd(int sd, client_t *list);
 void sig_handler(int sig);
 int get_input(client_t *, server_t *server, fd_set *master, fd_set *writy);

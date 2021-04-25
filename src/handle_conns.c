@@ -24,13 +24,15 @@ void remove_from_list(client_t *tmp, server_t *server)
         tmp->next->prev = tmp->prev;
     }
     if (tmp->next == NULL) {
+        tmp->prev->next = NULL;
         tmp = NULL;
     }
 }
 
-static void show_list(client_t *cl_list)
+void show_list(client_t *cl_list)
 {
     client_t *tmp = cl_list;
+    int count = 0;
     if (!tmp)
         fprintf(stderr, "We dont have any connected clients at the moment\n");
     while(tmp != NULL)
@@ -38,17 +40,34 @@ static void show_list(client_t *cl_list)
         fprintf(stderr, "we have %d\n", tmp->userfd);
         tmp = tmp->next;
     }
+    tmp = cl_list;
+    while (tmp != NULL) {
+        count++;
+        tmp = tmp->next;
+    }
+    printf("We have %d connections now\n", count);
 }
 
 static void *get_in_addr(SA *sa)
 {
-    return &(((struct sockaddr_in*)sa)->sin_addr);
+    return &(((struct sockaddr_in *)sa)->sin_addr);
+}
+
+static void print_welcome(SS rem_addr, client_t *new_cl, int ns)
+{
+    char *adr = inet_ntop(rem_addr.ss_family, get_in_addr((struct sockaddr *)&rem_addr),
+new_cl->ip, INET_ADDRSTRLEN);
+
+   fprintf(stderr, "new connection from %s on socket %d\n",
+             adr,ns);
 }
 
 void add_client(server_t *server, int ns, SS rem_addr, socklen_t adlen)
 {
+
     client_t *new_cl = malloc(sizeof(client_t));
-    client_t *tmp = malloc(sizeof(client_t));
+    client_t *tmp;
+    //= malloc(sizeof(client_t));
     new_cl->name = NULL;
     new_cl->auth = 0;
     new_cl->claddr = &rem_addr;
@@ -68,12 +87,8 @@ void add_client(server_t *server, int ns, SS rem_addr, socklen_t adlen)
     new_cl->receiving = false;
     new_cl->pasv = false;
     new_cl->addr = (SA *)&rem_addr;
+    print_welcome(rem_addr, new_cl, ns);
 
-    char *adr = inet_ntop(rem_addr.ss_family, get_in_addr((struct sockaddr *)&rem_addr), \
-new_cl->ip, INET_ADDRSTRLEN);
-
-    fprintf(stderr, "selectserver: new connection from %s on socket %d\n",
-              adr,ns);
     if (server->conn_list == NULL) {
         server->conn_list = new_cl;
         fprintf(stderr, "THIS IS OUR FIRST CLIENT %d\n", server->conn_list->userfd);
