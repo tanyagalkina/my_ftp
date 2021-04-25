@@ -20,6 +20,8 @@ SRCS	=	./src/main.c 		\
 		./src/my_str_isprintable.c	\
 		./src/pasv.c		\
 		./src/get_input.c	\
+		./src/port.c		\
+		./src/sig_tools.c
 
 OBJS	= $(SRCS:.c=.o)
 
