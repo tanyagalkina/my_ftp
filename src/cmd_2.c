@@ -11,9 +11,8 @@ void dele(client_t *client, char **args, server_t *server)
 {
     if (client->auth == false) {
         return ((void)(write(client->userfd, "530 Not logged in.\r\n", 20)));
-        return;
     }
-    else if (args[1] && remove(args[1]) == 0)
+    if (args[1] && !chdir(client->curr_dir) && remove(args[1]) == 0)
         write(client->userfd, "250 file deleted\r\n", 18);
     else
         write(client->userfd, "550\r\n", 5);

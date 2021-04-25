@@ -13,7 +13,7 @@ int is_alnum(char const character)
         return (1);
     if ((character >= 'a' && character <= 'z') || character == '/')
         return (1);
-    if ((character >= 'A' && character <= 'Z') || character == '.')
+    if ((character >= 'A' && character <= 'Z'))
         return (1);
     return (0);
 }

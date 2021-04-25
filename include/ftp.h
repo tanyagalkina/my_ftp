@@ -36,14 +36,17 @@ typedef struct client {
     char *home;
     int userfd;
     int transfd;
+    unsigned short p_port;
     bool auth;
     bool receiving;
     bool exit;
     bool pasv;
     FILE *inc_file;
+    SAIN *in_adr;
     SS *claddr;
     SA *addr;
     socklen_t addr_len;
+    //char *ip;
     char ip[INET_ADDRSTRLEN];
 }client_t;
 
@@ -69,6 +72,6 @@ client_t *get_client_by_sd(int sd, client_t *list);
 void sig_handler(int sig);
 int get_input(client_t *, server_t *server);
 void remove_from_list(client_t *tmp, server_t *server);
-void add_client(server_t *server, int ns,  SS rem_addr, socklen_t adlen);
+void add_client(server_t *server, int ns, SS rem_addr, socklen_t adlen);
 void remove_client(int sd, server_t *server);
 void server_run(int port, char *path);

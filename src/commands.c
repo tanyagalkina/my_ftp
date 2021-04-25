@@ -61,6 +61,6 @@ void cdup(client_t *client, char **args, server_t *server)
 void quit(client_t *client, char **args, server_t *server)
 {
     write(client->userfd, "221 See you later!\r\n", 20);
-    close(client->userfd);
+    client->auth = false;
     remove_client(client->userfd, server);
 }

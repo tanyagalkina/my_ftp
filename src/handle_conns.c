@@ -15,7 +15,7 @@ static void *get_in_addr(SA *sa)
 static void print_welcome(SS rem_addr, client_t *new_cl, int ns)
 {
     char *adr = inet_ntop(rem_addr.ss_family, \
-get_in_addr((struct sockaddr *)&rem_addr),
+get_in_addr((struct sockaddr *)&rem_addr), \
 new_cl->ip, INET_ADDRSTRLEN);
     fprintf(stderr, "new conn from %s on socket %d\n", adr, ns);
 }
@@ -25,7 +25,7 @@ client_init_aid(client_t *new_cl, server_t *s)
     int i = 0;
 
     new_cl->name = NULL;
-    new_cl->auth = 0;
+    new_cl->auth = false;
     new_cl->inc_file = NULL;
     new_cl->next = NULL;
     new_cl->prev = NULL;
@@ -45,8 +45,8 @@ void add_client(server_t *server, int ns, SS rem_addr, socklen_t adlen)
 {
     client_t *new_cl = malloc(sizeof(client_t));
     client_init_aid(new_cl, server);
-    new_cl->claddr = &rem_addr;
     new_cl->userfd = ns;
+    new_cl->in_adr = &rem_addr;
     new_cl->addr = (SA *)&rem_addr;
     print_welcome(rem_addr, new_cl, ns);
     add_to_list(server, new_cl);

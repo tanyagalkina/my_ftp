@@ -33,7 +33,7 @@ server_t *serv_init(int port, char *path)
     server->conn_addr.sin_family = AF_INET;
     server->conn_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     server->conn_addr.sin_port = htons(port);
-    if (bind(server->sd, (SA *) &server->conn_addr, (int)sizeof(SAIN)) < 0) {
+    if (bind(server->sd, (SA *)&server->conn_addr, (int)sizeof(SAIN)) < 0) {
         perror("bind failed");
         exit(84);
     }
@@ -57,7 +57,8 @@ void accept_new(server_t *server, fd_set *master_socks, int *fd_max)
     socklen_t adlen;
     int ns = -1;
     SS rem_addr;
-    ns = accept(server->sd, (SA *) &rem_addr, &adlen);
+    //SAIN rem_addr;
+    ns = accept(server->sd, (SA *)&rem_addr, &adlen);
     add_client(server, ns, rem_addr, adlen);
     FD_SET(ns, master_socks);
     if (ns > *fd_max)
