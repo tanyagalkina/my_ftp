@@ -11,5 +11,11 @@ $> make
 <br>
 
 ## USAGE
+```sh
+$> ./myftp –help
+USAGE: ./myftp port path
+	port is the port number on which the server socket listens
+	path is the path to the home directory for the Anonymous user
+```
 
 For USAGE Please look in the pdf at the root of repository
